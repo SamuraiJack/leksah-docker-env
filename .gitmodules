@@ -1,0 +1,3 @@
+[submodule "leksah"]
+	path = leksah
+	url = git@github.com:leksah/leksah.git

@@ -1,0 +1,33 @@
+FROM ubuntu:16.04
+
+SHELL ["/bin/bash", "-c"]
+
+RUN \
+    apt-get update && apt-get install -y \
+        mc libgirepository1.0-dev libwebkit2gtk-4.0-dev libgtksourceview-3.0-dev
+
+RUN \
+    apt-get install -y \
+        sudo wget
+
+RUN export uid=1000 gid=1000 && \
+    mkdir -p /home/developer && \
+    echo "developer:x:${uid}:${gid}:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
+    echo "developer:x:${uid}:" >> /etc/group && \
+    echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
+    chmod 0440 /etc/sudoers.d/developer && \
+    chown ${uid}:${gid} -R /home/developer
+
+USER developer
+ENV HOME /home/developer
+
+RUN wget -qO- https://get.haskellstack.org/ | sh
+
+RUN echo 'export PATH="$HOME/bin:$HOME/.local/bin:$PATH"' > ~/.bashrc
+
+USER root
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
+RUN apt-get install -y nodejs
+
+USER developer
